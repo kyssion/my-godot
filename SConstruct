@@ -13,7 +13,12 @@ from collections import OrderedDict
 import methods
 import gles_builders
 from platform_methods import run_in_subprocess
-
+from SCons.Script import ARGUMENTS
+from SCons.Variables import BoolVariable  # okay
+from SCons.Variables import EnumVariable  # okay
+from SCons.Variables import ListVariable  # naja
+from SCons.Variables import PackageVariable # naja
+from SCons.Variables import PathVariable # okay
 # scan possible build platforms
 
 platform_list = []  # list of platforms
@@ -24,13 +29,14 @@ active_platforms = []
 active_platform_ids = []
 platform_exporters = []
 platform_apis = []
-
+# 扫描所有的platform包下的东西
 for x in sorted(glob.glob("platform/*")):
     if not os.path.isdir(x) or not os.path.exists(x + "/detect.py"):
         continue
     tmppath = "./" + x
 
     sys.path.insert(0, tmppath)
+    # 扫描出platform跨平台下所有的文件, 然后按照标准运行其中的逻辑
     import detect
 
     if os.path.exists(x + "/export/export.cpp"):
