@@ -1,0 +1,18 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build",
+			"group": "build",
+			"type": "shell",
+			"command": "scons",
+			"args": [
+			  // Use this when your default shell is Command Prompt (cmd.exe).
+			  "-j 8",
+			  // Use this when your default shell is PowerShell.
+			  "-j 8"
+			],
+			"problemMatcher": "$msCompile"
+		  }
+	]
+}
