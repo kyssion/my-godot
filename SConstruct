@@ -50,8 +50,8 @@ for x in sorted(glob.glob("platform/*")):
         x = x.replace("platform/", "")  # rest of world
         x = x.replace("platform\\", "")  # win32
         platform_list += [x]
-        platform_opts[x] = detect.get_opts()
-        platform_flags[x] = detect.get_flags()
+        platform_opts[x] = detect.get_opts()   # 这个opts 中包含这个跨平台使用的工具的各种信息
+        platform_flags[x] = detect.get_flags() # flag 表示, todo 暂时不知到在哪里使用了
     sys.path.remove(tmppath)
     sys.modules.pop("detect")
 
@@ -111,7 +111,7 @@ if profile:
         customs.append(profile)
     elif os.path.isfile(profile + ".py"):
         customs.append(profile + ".py")
-
+# 这里是通过将argument(命令行传入的) 和customs 中定义的变量放入scons 全局变量中使用
 opts = Variables(customs, ARGUMENTS)
 
 # Target build options
@@ -189,10 +189,11 @@ opts.Add("LINKFLAGS", "Custom flags for the linker")
 
 # Update the environment to have all above options defined
 # in following code (especially platform and custom_modules).
+# 更新 opts 中的相关配置信息
 opts.Update(env_base)
 
 # Platform selection: validate input, and add options.
-
+# 选择当前编译的平台, 比如自己编译的平台是windows还是其他
 selected_platform = ""
 
 if env_base["platform"] != "":
@@ -201,6 +202,7 @@ elif env_base["p"] != "":
     selected_platform = env_base["p"]
 else:
     # Missing `platform` argument, try to detect platform automatically
+    # 如果没有配置 - 将会自动化选择 - 
     if sys.platform.startswith("linux"):
         selected_platform = "x11"
     elif sys.platform == "darwin":
@@ -215,28 +217,28 @@ else:
 
     if selected_platform != "":
         print("Automatically detected platform: " + selected_platform)
-
 if selected_platform in ["linux", "bsd", "linuxbsd"]:
     if selected_platform == "linuxbsd":
-        # Alias for forward compatibility.
+        # Alias for forward compatibility. 向前兼容别名
         print('Platform "linuxbsd" is still called "x11" in Godot 3.x. Building for platform "x11".')
-    # Alias for convenience.
+    # Alias for convenience. 
     selected_platform = "x11"
 
 # Make sure to update this to the found, valid platform as it's used through the buildsystem as the reference.
 # It should always be re-set after calling `opts.Update()` otherwise it uses the original input value.
+# platform - 这里选出了许哟啊的platform数据, 然后把这个复制给 env_base - 接下来需要使用opt.update 方法来设置的值生效
 env_base["platform"] = selected_platform
 
-# Add platform-specific options.
+# Add platform-specific options. 将之前已经搜索到的 paltform 重新写回 选择好的platform属性中 完善这个配置的属性信息
 if selected_platform in platform_opts:
     for opt in platform_opts[selected_platform]:
         opts.Add(opt)
 
-# Update the environment to take platform-specific options into account.
+# Update the environment to take platform-specific options into account. 将选择的环境信息更新进来
 opts.Update(env_base)
 env_base["platform"] = selected_platform  # Must always be re-set after calling opts.Update().
 
-# Detect modules.
+# Detect modules. 模块检测
 modules_detected = OrderedDict()
 module_search_paths = ["modules"]  # Built-in path.
 
@@ -331,14 +333,16 @@ if selected_platform in platform_list:
 
     scons_ver = env._get_major_minor_revision(scons_raw_version)
 
+    # 开启comilation_db 编译中间支持
     if scons_ver >= (4, 0, 0):
         env.Tool("compilation_db")
         env.Alias("compiledb", env.CompilationDatabase())
 
     # 'dev' and 'production' are aliases to set default options if they haven't been set
     # manually by the user.
+    # 如果没有特别设置 dev 和 production就是默认的设置项
     if env["dev"]:
-        env["verbose"] = methods.get_cmdline_bool("verbose", True)
+        env["verbose"] = methods.get_cmdline_bool("verbose", True) # ? 冗长的
         env["warnings"] = ARGUMENTS.get("warnings", "extra")
         env["werror"] = methods.get_cmdline_bool("werror", True)
     if env["production"]:

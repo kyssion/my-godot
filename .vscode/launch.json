@@ -11,7 +11,11 @@
             "program": "${workspaceFolder}/bin/godot.windows.tools.64.exe",
             // Change the arguments below for the project you want to test with.
             // To run the project instead of editing it, remove the "--editor" argument.
-            "args": [ "--editor", "--path", "path-to-your-godot-project-folder" ],
+            "args": [
+                "--editor",
+                "--path",
+                "path-to-your-godot-project-folder"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
