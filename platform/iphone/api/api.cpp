@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  java_godot_io_wrapper.h                                              */
+/*  api.cpp                                                              */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,67 +28,21 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-// note, swapped java and godot around in the file name so all the java
-// wrappers are together
+#include "api.h"
 
-#ifndef JAVA_GODOT_IO_WRAPPER_H
-#define JAVA_GODOT_IO_WRAPPER_H
+#if defined(IPHONE_ENABLED)
 
-#include <android/log.h>
-#include <jni.h>
+void register_iphone_api() {
+	godot_ios_plugins_initialize();
+}
 
-#include "string_android.h"
+void unregister_iphone_api() {
+	godot_ios_plugins_deinitialize();
+}
 
-// Class that makes functions in java/src/org/godotengine/godot/GodotIO.java callable from C++
-class GodotIOJavaWrapper {
-private:
-	jobject godot_io_instance;
-	jclass cls;
+#else
 
-	jmethodID _open_URI = 0;
-	jmethodID _get_cache_dir = 0;
-	jmethodID _get_data_dir = 0;
-	jmethodID _get_locale = 0;
-	jmethodID _get_model = 0;
-	jmethodID _get_screen_DPI = 0;
-	jmethodID _get_window_safe_area = 0;
-	jmethodID _get_unique_id = 0;
-	jmethodID _show_keyboard = 0;
-	jmethodID _hide_keyboard = 0;
-	jmethodID _set_screen_orientation = 0;
-	jmethodID _get_screen_orientation = 0;
-	jmethodID _get_system_dir = 0;
-	jmethodID _play_video = 0;
-	jmethodID _is_video_playing = 0;
-	jmethodID _pause_video = 0;
-	jmethodID _stop_video = 0;
+void register_iphone_api() {}
+void unregister_iphone_api() {}
 
-public:
-	GodotIOJavaWrapper(JNIEnv *p_env, jobject p_godot_io_instance);
-	~GodotIOJavaWrapper();
-
-	jobject get_instance();
-
-	Error open_uri(const String &p_uri);
-	String get_cache_dir();
-	String get_user_data_dir();
-	String get_locale();
-	String get_model();
-	int get_screen_dpi();
-	void get_window_safe_area(int (&p_rect_xywh)[4]);
-	String get_unique_id();
-	bool has_vk();
-	void show_vk(const String &p_existing, bool p_multiline, int p_max_input_length, int p_cursor_start, int p_cursor_end);
-	void hide_vk();
-	int get_vk_height();
-	void set_vk_height(int p_height);
-	void set_screen_orientation(int p_orient);
-	int get_screen_orientation() const;
-	String get_system_dir(int p_dir, bool p_shared_storage);
-	void play_video(const String &p_path);
-	bool is_video_playing();
-	void pause_video();
-	void stop_video();
-};
-
-#endif /* !JAVA_GODOT_IO_WRAPPER_H */
+#endif
