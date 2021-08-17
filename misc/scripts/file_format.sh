@@ -32,6 +32,8 @@ while IFS= read -rd '' f; do
         continue
     elif [[ "$f" == *"-so_wrap."* ]]; then
         continue
+     elif [[ "$f" == *".vscode/"* ]]; then
+        continue
     fi
     # Ensure that files are UTF-8 formatted.
     recode UTF-8 "$f" 2> /dev/null
