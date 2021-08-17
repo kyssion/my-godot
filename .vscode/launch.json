@@ -14,7 +14,7 @@
             "args": [
                 "--editor",
                 "--path",
-                "path-to-your-godot-project-folder"
+                "D:\\project\\godot-project\\godot-game\\godot-demo-projects\\2d\\dodge_the_creeps"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
